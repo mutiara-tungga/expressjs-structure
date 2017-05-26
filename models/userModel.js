@@ -1,5 +1,4 @@
-var bookshelf = require('../bookshelf'),
-    bcrypt = require('bcrypt');
+var bookshelf = require('../bookshelf');
 
 var UserModel = bookshelf.Model.extend({
     tableName: 'users',
@@ -8,7 +7,7 @@ var UserModel = bookshelf.Model.extend({
     },
     assertEmailUnique: function (model, attributes, options) {
         if (this.hasChanged('email')) { //bila ada perubahan pada email
-            return Users
+            return UserModel
                 .query('where', 'email', this.get('email'))
                 // .fetch(_.pick(options || {}, 'transacting')) //transacting mksudnya adalah run query in transaction
                 .fetch()
@@ -23,21 +22,9 @@ var UserModel = bookshelf.Model.extend({
     //querying on this will constrain your query to the current record, you need to query from scratch, using plain User
 });
 
-hash = function (password) {
-    return bcrypt.hashSync(password, 10);
-}
-
 exports.create = function (user, activationCode) {
-    var data = {
-        first_name: user.firstName,
-        last_name: user.lastName,
-        email: user.email,
-        password: user.password,
-        activation_code: activationCode
-    }
-
     return new Promise(function (resolve, reject) {
-        new UserModel(data)
+        new UserModel(user)
             .save()
             .then(function (result) {
                 resolve(result);
